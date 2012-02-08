@@ -25,7 +25,7 @@ loggers, filters, and handlers that your application has configured::
 
 The logger tree should always print successfully, no matter how
 complicated.  A node whose ``[name]`` is in square brackets is a "place
-holder" that have never actually been named by a ``getLogger()`` call.
+holder" that has never actually been named in a ``getLogger()`` call.
 At the moment handlers and filters are not printed out in a terribly
 informative manner, but this will improve as I continue to code.
 
