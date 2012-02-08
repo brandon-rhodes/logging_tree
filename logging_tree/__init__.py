@@ -29,6 +29,11 @@ holder" that has never actually been named in a ``getLogger()`` call.
 At the moment handlers and filters are not printed out in a terribly
 informative manner, but this will improve as I continue to code.
 
+I owe great thanks to `Rover Apps <http://roverapps.com/>`_ for letting
+me release this.  I developed the core logic that powers this package on
+their time, but they are letting me retain the copyright and distribute
+it to the community!
+
 This package is still under construction and under-documented, but even
 this primitive release will hopefully help a few of you.  I welcome
 contributions and ideas as this package matures!  You can find the bug
