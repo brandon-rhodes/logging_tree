@@ -25,7 +25,7 @@ def _printout(node, prefix='', is_last=True):
         print prefix + 'o' + arrow + name
     else:
         print '    ' + name
-    leader = prefix + ('    ' if is_last else '|   ')
+    prefix += ('    ' if is_last else '|   ')
     if not is_placeholder:
         facts = []
         if logger.level:
@@ -37,11 +37,11 @@ def _printout(node, prefix='', is_last=True):
         for h in logger.handlers:
             facts.append('Handler %s' % describe_handler(h))
         for fact in facts:
-            print leader + fact
+            print prefix + fact
     if node.children:
         last_child = node.children[-1]
         for child in node.children:
-            _printout(child, leader, child is last_child)
+            _printout(child, prefix, child is last_child)
 
 
 def describe_filter(f):
