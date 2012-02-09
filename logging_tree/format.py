@@ -44,15 +44,23 @@ def _printout(node, prefix='', is_last=True):
             _printout(child, prefix, child is last_child)
 
 
+# It is important that the 'if' statements in the "describe" functions
+# below use `type(x) == Y` conditions instead of calling `isinstance()`,
+# since a Filter or Handler subclass might implement arbitrary behaviors
+# quite different from those of its superclass.
+
 def describe_filter(f):
     """Return text describing the logging filter `f`."""
-    # TODO
-    return f.__class__.__name__
+    if type(f) is logging.Filter:
+        return 'name=%r' % f.name
+    return repr(f)
 
 
 def describe_handler(h):
     """Return text describing the logging handler `h`."""
-    if isinstance(h, logging.StreamHandler):
+    if type(h) is logging.StreamHandler:
         return 'Stream %r' % h.stream
+    if type(h) is logging.FileHandler:
+        return 'File %r' % h.baseFilename
     # TODO: add further cases here.
-    return h.__class__.__name__
+    return repr(h)
