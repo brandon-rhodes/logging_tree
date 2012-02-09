@@ -32,12 +32,20 @@ def _printout(node, prefix='', is_last=True):
             facts.append('Level ' + logging.getLevelName(logger.level))
         if not logger.propagate:
             facts.append('Propagate OFF')
-        for f in logger.filters:
+
+        # getattr() protects us against crazy homemade filters and
+        # handlers that might not have the attributes of normal ones:
+
+        for f in getattr(logger, 'filters', ()):
             facts.append('Filter %s' % describe_filter(f))
-        for h in logger.handlers:
+        for h in getattr(logger, 'handlers', ()):
             facts.append('Handler %s' % describe_handler(h))
+            for f in getattr(h, 'filters', ()):
+                facts.append('  Filter %s' % describe_filter(f))
+
         for fact in facts:
             print prefix + fact
+
     if node.children:
         last_child = node.children[-1]
         for child in node.children:

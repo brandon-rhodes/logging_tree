@@ -41,9 +41,11 @@ class FormatTests(TestCase):
         log = logging.getLogger('db')
         log.setLevel(logging.INFO)
         log.propagate = False
-        log.addFilter(logging.Filter('db.errors'))
         log.addFilter(MyFilter())
-        log.addHandler(logging.StreamHandler())
+
+        handler = logging.StreamHandler()
+        log.addHandler(handler)
+        handler.addFilter(logging.Filter('db.errors'))
 
         logging.getLogger('db.errors')
         logging.getLogger('db.stats')
@@ -61,9 +63,9 @@ class FormatTests(TestCase):
     o   "db"
     |   Level INFO
     |   Propagate OFF
-    |   Filter name='db.errors'
     |   Filter <MyFilter>
     |   Handler Stream %r
+    |     Filter name='db.errors'
     |   |
     |   o<--"db.errors"
     |   |
