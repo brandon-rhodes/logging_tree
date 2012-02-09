@@ -34,3 +34,58 @@ class FormatTests(TestCase):
         |
         o<--"x.c"
 ''')
+
+    def test_fancy_tree(self):
+        logging.getLogger('').setLevel(logging.DEBUG)
+
+        log = logging.getLogger('db')
+        log.setLevel(logging.INFO)
+        log.propagate = False
+        log.addFilter(logging.Filter('db.errors'))
+        log.addFilter(MyFilter())
+        log.addHandler(logging.StreamHandler())
+
+        logging.getLogger('db.errors')
+        logging.getLogger('db.stats')
+
+        log = logging.getLogger('www.status')
+        log.setLevel(logging.DEBUG)
+        log.addHandler(logging.FileHandler('/foo/log.txt', delay=1))
+        log.addHandler(MyHandler())
+
+        printout()
+        self.assertEqual(sys.stdout.getvalue(), '''\
+    ""
+    Level DEBUG
+    |
+    o   "db"
+    |   Level INFO
+    |   Propagate OFF
+    |   Filter name='db.errors'
+    |   Filter <MyFilter>
+    |   Handler Stream %r
+    |   |
+    |   o<--"db.errors"
+    |   |
+    |   o<--"db.stats"
+    |
+    o<--[www]
+        |
+        o<--"www.status"
+            Level DEBUG
+            Handler File '/foo/log.txt'
+            Handler <MyHandler>
+''' % (sys.stderr,))
+
+
+class MyFilter(logging.Filter):
+    def __repr__(self):
+        return '<MyFilter>'
+
+
+class MyHandler(logging.Handler):
+    def __init__(self):
+        pass  # Avoid "__init__() must be called with Filterer instance" error
+
+    def __repr__(self):
+        return '<MyHandler>'
