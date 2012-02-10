@@ -1,8 +1,8 @@
 """Tests for the `logging_tree.node` module."""
 
-import logging
+import logging.handlers
 from logging_tree.nodes import tree
-from unittest import TestCase
+from logging_tree.tests.case import LoggingTestCase
 
 class AnyPlaceHolder(object):
     def __eq__(self, other):
@@ -10,11 +10,12 @@ class AnyPlaceHolder(object):
 
 any_placeholder = AnyPlaceHolder()
 
-class NodeTests(TestCase):
+class NodeTests(LoggingTestCase):
 
     def tearDown(self):
         # Looks like `logging` gives us no other way to reset it!
         reload(logging)
+        reload(logging.handlers)  # force Handler subclasses to be rebuilt
 
     def test_default_tree(self):
         self.assertEqual(tree(), ('', logging.root, []))

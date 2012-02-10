@@ -1,6 +1,6 @@
 """Routines that pretty-print a hierarchy of logging `Node` objects."""
 
-import logging
+import logging.handlers
 
 
 def printout(node=None):
@@ -57,6 +57,7 @@ def _printout(node, prefix='', is_last=True):
 # since a Filter or Handler subclass might implement arbitrary behaviors
 # quite different from those of its superclass.
 
+
 def describe_filter(f):
     """Return text describing the logging filter `f`."""
     if type(f) is logging.Filter:
@@ -70,5 +71,27 @@ def describe_handler(h):
         return 'Stream %r' % h.stream
     if type(h) is logging.FileHandler:
         return 'File %r' % h.baseFilename
-    # TODO: add further cases here.
+    if type(h) is logging.handlers.RotatingFileHandler:
+        return 'RotatingFile %r maxBytes=%r backupCount=%r' % (
+            h.baseFilename, h.maxBytes, h.backupCount)
+    if type(h) is logging.handlers.TimedRotatingFileHandler:
+        return 'TimedRotatingFile %r when=%r interval=%r backupCount=%r' % (
+            h.baseFilename, h.when, h.interval, h.backupCount)
+    if type(h) is logging.handlers.WatchedFileHandler:
+        return 'WatchedFile %r' % h.baseFilename
+    if type(h) is logging.handlers.SocketHandler:
+        return 'Socket %s %r' % (h.host, h.port)
+    if type(h) is logging.handlers.DatagramHandler:
+        return 'Datagram %s %r' % (h.host, h.port)
+    if type(h) is logging.handlers.SysLogHandler:
+        return 'SysLog %s:%r facility=%r' % (h.address + (h.facility,))
+    if type(h) is logging.handlers.SMTPHandler:
+        return 'SMTP via %s to %s' % (h.mailhost, h.toaddrs)
+    if type(h) is logging.handlers.HTTPHandler:
+        return 'HTTP %s to http://%s/%s' % (h.method, h.host, h.url)
+    if type(h) is logging.handlers.BufferingHandler:
+        return 'Buffering capacity=%r' % h.capacity
+    if type(h) is logging.handlers.MemoryHandler:
+        # TODO: recursively examine the next handler down
+        return 'Memory capacity=%r' % h.capacity
     return repr(h)
