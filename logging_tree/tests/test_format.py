@@ -119,14 +119,11 @@ class FormatTests(LoggingTestCase):
 ''')
 
 
-class MyFilter(logging.Filter):
+class MyFilter(object):
     def __repr__(self):
         return '<MyFilter>'
 
 
-class MyHandler(logging.Handler):
-    def __init__(self):
-        pass  # Avoid "__init__() must be called with Filterer instance" error
-
+class MyHandler(object):
     def __repr__(self):
         return '<MyHandler>'
