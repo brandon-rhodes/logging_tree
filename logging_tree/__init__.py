@@ -1,4 +1,4 @@
-"""This package introspects the ``logging`` logger tree in the Standard Library.
+"""Introspection for the ``logging`` logger tree in the Standard Library.
 
 While you can write programs that call this package's ``tree()``
 function and examine the hierarchy of logger objects that it finds
@@ -45,8 +45,17 @@ Developers can run this package's tests with::
 On older versions of Python you will instead have to install
 ``unittest2`` and use its ``unit2`` command line tool to run the tests.
 
+Changelog
+---------
+
+**Version 0.6** - 2012 February 10
+    Added a display format for every ``logging.handlers`` class.
+
+**Version 0.5** - 2012 February 8
+    Initial release.
+
 """
-__version__ = '0.5'
+__version__ = '0.6'
 __all__ = ('Node', 'tree', 'printout')
 
 from logging_tree.nodes import Node, tree
