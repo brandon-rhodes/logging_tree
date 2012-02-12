@@ -12,11 +12,6 @@ any_placeholder = AnyPlaceHolder()
 
 class NodeTests(LoggingTestCase):
 
-    def tearDown(self):
-        # Looks like `logging` gives us no other way to reset it!
-        reload(logging)
-        reload(logging.handlers)  # force Handler subclasses to be rebuilt
-
     def test_default_tree(self):
         self.assertEqual(tree(), ('', logging.root, []))
 
