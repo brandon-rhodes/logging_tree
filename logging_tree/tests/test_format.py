@@ -110,7 +110,7 @@ class FormatTests(LoggingTestCase):
     Handler WatchedFile '/bar/three.txt'
     Handler Socket server.example.com 514
     Handler Datagram server.example.com 1958
-    Handler SysLog localhost:514 facility=1
+    Handler SysLog ('localhost', 514) facility=1
     Handler SMTP via mail.example.com to ['Sysadmin']
     Handler HTTP POST to http://api.example.com//logs
     Handler Buffering capacity=20000

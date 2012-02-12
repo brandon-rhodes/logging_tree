@@ -33,8 +33,9 @@ def _printout(node, prefix='', is_last=True):
         if not logger.propagate:
             facts.append('Propagate OFF')
 
-        # getattr() protects us against crazy homemade filters and
-        # handlers that might not have the attributes of normal ones:
+        # In case someone has defined a custom logger that lacks a
+        # `filters` or `handlers` attribute, we call getattr() and
+        # provide an empty sequence as a fallback.
 
         for f in getattr(logger, 'filters', ()):
             facts.append('Filter %s' % describe_filter(f))
@@ -65,33 +66,29 @@ def describe_filter(f):
     return repr(f)
 
 
+handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
+    logging.StreamHandler: 'Stream %(stream)r',
+    logging.FileHandler: 'File %(baseFilename)r',
+    logging.handlers.RotatingFileHandler: 'RotatingFile %(baseFilename)r'
+        ' maxBytes=%(maxBytes)r backupCount=%(backupCount)r',
+    logging.handlers.TimedRotatingFileHandler:
+        'TimedRotatingFile %(baseFilename)r when=%(when)r'
+        ' interval=%(interval)r backupCount=%(backupCount)r',
+    logging.handlers.WatchedFileHandler: 'WatchedFile %(baseFilename)r',
+    logging.handlers.SocketHandler: 'Socket %(host)s %(port)r',
+    logging.handlers.DatagramHandler: 'Datagram %(host)s %(port)r',
+    logging.handlers.SysLogHandler: 'SysLog %(address)r facility=%(facility)r',
+    logging.handlers.SMTPHandler: 'SMTP via %(mailhost)s to %(toaddrs)s',
+    logging.handlers.HTTPHandler: 'HTTP %(method)s to http://%(host)s/%(url)s',
+    logging.handlers.BufferingHandler: 'Buffering capacity=%(capacity)r',
+    # TODO: recursively examine the next handler down
+    logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r',
+    }
+
+
 def describe_handler(h):
     """Return text describing the logging handler `h`."""
-    if type(h) is logging.StreamHandler:
-        return 'Stream %r' % h.stream
-    if type(h) is logging.FileHandler:
-        return 'File %r' % h.baseFilename
-    if type(h) is logging.handlers.RotatingFileHandler:
-        return 'RotatingFile %r maxBytes=%r backupCount=%r' % (
-            h.baseFilename, h.maxBytes, h.backupCount)
-    if type(h) is logging.handlers.TimedRotatingFileHandler:
-        return 'TimedRotatingFile %r when=%r interval=%r backupCount=%r' % (
-            h.baseFilename, h.when, h.interval, h.backupCount)
-    if type(h) is logging.handlers.WatchedFileHandler:
-        return 'WatchedFile %r' % h.baseFilename
-    if type(h) is logging.handlers.SocketHandler:
-        return 'Socket %s %r' % (h.host, h.port)
-    if type(h) is logging.handlers.DatagramHandler:
-        return 'Datagram %s %r' % (h.host, h.port)
-    if type(h) is logging.handlers.SysLogHandler:
-        return 'SysLog %s:%r facility=%r' % (h.address + (h.facility,))
-    if type(h) is logging.handlers.SMTPHandler:
-        return 'SMTP via %s to %s' % (h.mailhost, h.toaddrs)
-    if type(h) is logging.handlers.HTTPHandler:
-        return 'HTTP %s to http://%s/%s' % (h.method, h.host, h.url)
-    if type(h) is logging.handlers.BufferingHandler:
-        return 'Buffering capacity=%r' % h.capacity
-    if type(h) is logging.handlers.MemoryHandler:
-        # TODO: recursively examine the next handler down
-        return 'Memory capacity=%r' % h.capacity
+    format = handler_formats.get(type(h))
+    if format is not None:
+        return format % h.__dict__
     return repr(h)
