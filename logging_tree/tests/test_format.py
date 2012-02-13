@@ -3,37 +3,35 @@
 import logging
 import logging.handlers
 import sys
-from logging_tree.format import printout
+from logging_tree.format import build_description, printout
 from logging_tree.tests.case import LoggingTestCase
 from StringIO import StringIO
 
 
 class FormatTests(LoggingTestCase):
 
-    def setUp(self):
-        self.stdout, sys.stdout = sys.stdout, StringIO()
-
-    def tearDown(self):
-        sys.stdout = self.stdout
-        LoggingTestCase.tearDown(self)
+    def test_printout(self):
+        stdout, sys.stdout = sys.stdout, StringIO()
+        printout()
+        self.assertEqual(sys.stdout.getvalue(), '<--""\n   Level WARNING\n')
+        sys.stdout = stdout
 
     def test_simple_tree(self):
         logging.getLogger('a')
         logging.getLogger('a.b').setLevel(logging.DEBUG)
         logging.getLogger('x.c')
-        printout()
-        self.assertEqual(sys.stdout.getvalue(), '''\
-    ""
-    Level WARNING
-    |
-    o<--"a"
-    |   |
-    |   o<--"a.b"
-    |       Level DEBUG
-    |
-    o<--[x]
-        |
-        o<--"x.c"
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   |
+   o<--"a"
+   |   |
+   |   o<--"a.b"
+   |       Level DEBUG
+   |
+   o<--[x]
+       |
+       o<--"x.c"
 ''')
 
     def test_fancy_tree(self):
@@ -56,66 +54,60 @@ class FormatTests(LoggingTestCase):
         log.addHandler(logging.FileHandler('/foo/log.txt', delay=1))
         log.addHandler(MyHandler())
 
-        printout()
-        self.assertEqual(sys.stdout.getvalue(), '''\
-    ""
-    Level DEBUG
-    |
-    o   "db"
-    |   Level INFO
-    |   Propagate OFF
-    |   Filter <MyFilter>
-    |   Handler Stream %r
-    |     Filter name='db.errors'
-    |   |
-    |   o<--"db.errors"
-    |   |
-    |   o<--"db.stats"
-    |
-    o<--[www]
-        |
-        o<--"www.status"
-            Level DEBUG
-            Handler File '/foo/log.txt'
-            Handler <MyHandler>
+        self.assertEqual(build_description(), '''\
+<--""
+   Level DEBUG
+   |
+   o   "db"
+   |   Level INFO
+   |   Propagate OFF
+   |   Filter <MyFilter>
+   |   Handler Stream %r
+   |     Filter name='db.errors'
+   |   |
+   |   o<--"db.errors"
+   |   |
+   |   o<--"db.stats"
+   |
+   o<--[www]
+       |
+       o<--"www.status"
+           Level DEBUG
+           Handler File '/foo/log.txt'
+           Handler <MyHandler>
 ''' % (sys.stderr,))
 
     def test_all_handlers(self):
         ah = logging.getLogger('').addHandler
         ah(logging.handlers.RotatingFileHandler(
                 '/bar/one.txt', maxBytes=10000, backupCount=3, delay=1))
-        ah(logging.handlers.TimedRotatingFileHandler(
-                '/bar/two.txt', delay=1))
-        ah(logging.handlers.WatchedFileHandler(
-                '/bar/three.txt', delay=1))
-        ah(logging.handlers.SocketHandler(
-                'server.example.com', 514))
-        ah(logging.handlers.DatagramHandler(
-                'server.example.com', 1958))
+        ah(logging.handlers.TimedRotatingFileHandler('/bar/two.txt', delay=1))
+        ah(logging.handlers.WatchedFileHandler('/bar/three.txt', delay=1))
+        ah(logging.handlers.SocketHandler('server.example.com', 514))
+        ah(logging.handlers.DatagramHandler('server.example.com', 1958))
         ah(logging.handlers.SysLogHandler())
         ah(logging.handlers.SMTPHandler(
                 'mail.example.com', 'Server', 'Sysadmin', 'Logs!'))
         # ah(logging.handlers.NTEventLogHandler())
-        ah(logging.handlers.HTTPHandler(
-                'api.example.com', '/logs', 'POST'))
+        ah(logging.handlers.HTTPHandler('api.example.com', '/logs', 'POST'))
         ah(logging.handlers.BufferingHandler(20000))
-        ah(logging.handlers.MemoryHandler(
-                30000, target=logging.StreamHandler()))
-        printout()
-        self.assertEqual(sys.stdout.getvalue(), '''\
-    ""
-    Level WARNING
-    Handler RotatingFile '/bar/one.txt' maxBytes=10000 backupCount=3
-    Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
-    Handler WatchedFile '/bar/three.txt'
-    Handler Socket server.example.com 514
-    Handler Datagram server.example.com 1958
-    Handler SysLog ('localhost', 514) facility=1
-    Handler SMTP via mail.example.com to ['Sysadmin']
-    Handler HTTP POST to http://api.example.com//logs
-    Handler Buffering capacity=20000
-    Handler Memory capacity=30000
-''')
+        sh = logging.StreamHandler()
+        ah(logging.handlers.MemoryHandler(30000, target=sh))
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler RotatingFile '/bar/one.txt' maxBytes=10000 backupCount=3
+   Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
+   Handler WatchedFile '/bar/three.txt'
+   Handler Socket server.example.com 514
+   Handler Datagram server.example.com 1958
+   Handler SysLog ('localhost', 514) facility=1
+   Handler SMTP via mail.example.com to ['Sysadmin']
+   Handler HTTP POST to http://api.example.com//logs
+   Handler Buffering capacity=20000
+   Handler Memory capacity=30000 dumping to:
+     Handler Stream %r
+''' % (sh.stream,))
 
 
 class MyFilter(object):

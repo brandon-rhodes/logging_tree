@@ -4,59 +4,72 @@ import logging.handlers
 
 
 def printout(node=None):
-    """Print the tree of `Node` tuples whose root is `node`.
+    """Print a tree of loggers, given a `Node` from `logging_tree.nodes`.
 
-    If no `node` is provided, the entire tree of loggers is printed out.
+    If no `node` argument is provided, then the entire tree of currently
+    active `logging` loggers is printed out.
+
+    """
+    print build_description(node),
+
+
+def build_description(node=None):
+    """Return a multi-line string describing a `logging_tree.nodes.Node`.
+
+    If no `node` argument is provided, then the entire tree of currently
+    active `logging` loggers is printed out.
 
     """
     if node is None:
         from logging_tree.nodes import tree
         node = tree()
-    _printout(node)
+    return '\n'.join(line.rstrip() for line in describe(node)) + '\n'
 
 
-def _printout(node, prefix='', is_last=True):
+def describe(node):
+    """Generate lines describing the given `node`.
+
+    The `node` object should be a `Node` tuple as returned by a routine
+    from the module `logging_tree.nodes`.
+
+    """
     logger = node.logger
     is_placeholder = isinstance(logger, logging.PlaceHolder)
+    arrow = '<--' if (is_placeholder or logger.propagate) else '   '
     name = ('[%s]' if is_placeholder else '"%s"') % node.name
-    if prefix:
-        print prefix + '|'
-        arrow = '<--' if (is_placeholder or logger.propagate) else '   '
-        print prefix + 'o' + arrow + name
-    else:
-        print '    ' + name
-    prefix += ('    ' if is_last else '|   ')
+    yield arrow + name
     if not is_placeholder:
-        facts = []
         if logger.level:
-            facts.append('Level ' + logging.getLevelName(logger.level))
+            yield '   Level ' + logging.getLevelName(logger.level)
         if not logger.propagate:
-            facts.append('Propagate OFF')
+            yield '   Propagate OFF'
 
         # In case someone has defined a custom logger that lacks a
         # `filters` or `handlers` attribute, we call getattr() and
         # provide an empty sequence as a fallback.
 
         for f in getattr(logger, 'filters', ()):
-            facts.append('Filter %s' % describe_filter(f))
+            yield '   Filter %s' % describe_filter(f)
         for h in getattr(logger, 'handlers', ()):
-            facts.append('Handler %s' % describe_handler(h))
-            for f in getattr(h, 'filters', ()):
-                facts.append('  Filter %s' % describe_filter(f))
-
-        for fact in facts:
-            print prefix + fact
+            g = describe_handler(h)
+            yield '   Handler %s' % g.next()
+            for line in g:
+                yield '   ' + line
 
     if node.children:
         last_child = node.children[-1]
         for child in node.children:
-            _printout(child, prefix, child is last_child)
+            g = describe(child)
+            yield '   |'
+            yield '   o' + g.next()
+            prefix = '    ' if (child is last_child) else '   |'
+            for line in g:
+                yield prefix + line
 
 
-# It is important that the 'if' statements in the "describe" functions
-# below use `type(x) == Y` conditions instead of calling `isinstance()`,
-# since a Filter or Handler subclass might implement arbitrary behaviors
-# quite different from those of its superclass.
+# The functions below must avoid `isinstance()`, since a Filter or
+# Handler subclass might implement behavior that renders our tidy
+# description quite useless.
 
 
 def describe_filter(f):
@@ -81,14 +94,22 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.handlers.SMTPHandler: 'SMTP via %(mailhost)s to %(toaddrs)s',
     logging.handlers.HTTPHandler: 'HTTP %(method)s to http://%(host)s/%(url)s',
     logging.handlers.BufferingHandler: 'Buffering capacity=%(capacity)r',
-    # TODO: recursively examine the next handler down
-    logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r',
+    logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r dumping to:',
     }
 
 
 def describe_handler(h):
-    """Return text describing the logging handler `h`."""
-    format = handler_formats.get(type(h))
+    """Yield one or more lines describing the logging handler `h`."""
+    t = type(h)
+    format = handler_formats.get(t)
     if format is not None:
-        return format % h.__dict__
-    return repr(h)
+        yield format % h.__dict__
+        for f in getattr(h, 'filters', ()):
+            yield '  Filter %s' % describe_filter(f)
+        if t is logging.handlers.MemoryHandler and h.target is not None:
+            g = describe_handler(h.target)
+            yield '  Handler ' + g.next()
+            for line in g:
+                yield '  ' + line
+    else:
+        yield repr(h)
