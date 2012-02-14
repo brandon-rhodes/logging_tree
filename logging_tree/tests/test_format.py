@@ -109,6 +109,27 @@ class FormatTests(LoggingTestCase):
      Handler Stream %r
 ''' % (sh.stream,))
 
+    def test_nested_handlers(self):
+        h1 = logging.StreamHandler()
+
+        h2 = logging.handlers.MemoryHandler(30000, target=h1)
+        h2.addFilter(logging.Filter('worse'))
+
+        h3 = logging.handlers.MemoryHandler(30000, target=h2)
+        h3.addFilter(logging.Filter('bad'))
+
+        logging.getLogger('').addHandler(h3)
+
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler Memory capacity=30000 dumping to:
+     Filter name='bad'
+     Handler Memory capacity=30000 dumping to:
+       Filter name='worse'
+       Handler Stream %r
+''' % (h1.stream,))
+
 
 class MyFilter(object):
     def __repr__(self):
