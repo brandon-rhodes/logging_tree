@@ -9,7 +9,7 @@ setup(name='logging_tree',
       author_email='brandon@rhodesmill.org',
       url='https://github.com/brandon-rhodes/logging_tree',
       classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 6 - Mature',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Topic :: System :: Logging',
