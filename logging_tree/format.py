@@ -10,7 +10,7 @@ def printout(node=None):
     active `logging` loggers is printed out.
 
     """
-    print build_description(node),
+    print(build_description(node)[:-1])
 
 
 def build_description(node=None):
@@ -52,7 +52,7 @@ def describe(node):
             yield '   Filter %s' % describe_filter(f)
         for h in getattr(logger, 'handlers', ()):
             g = describe_handler(h)
-            yield '   Handler %s' % g.next()
+            yield '   Handler %s' % next(g)
             for line in g:
                 yield '   ' + line
 
@@ -61,7 +61,7 @@ def describe(node):
         for child in node.children:
             g = describe(child)
             yield '   |'
-            yield '   o' + g.next()
+            yield '   o' + next(g)
             prefix = '    ' if (child is last_child) else '   |'
             for line in g:
                 yield prefix + line
@@ -108,7 +108,7 @@ def describe_handler(h):
             yield '  Filter %s' % describe_filter(f)
         if t is logging.handlers.MemoryHandler and h.target is not None:
             g = describe_handler(h.target)
-            yield '  Handler ' + g.next()
+            yield '  Handler ' + next(g)
             for line in g:
                 yield '  ' + line
     else:

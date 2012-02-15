@@ -9,7 +9,7 @@ def tree():
     """Return a tree of `Node` tuples representing the logger layout."""
     root = Node('', logging.root, [])
     nodes = {}
-    for name, logger in sorted(logging.root.manager.loggerDict.iteritems()):
+    for name, logger in sorted(logging.root.manager.loggerDict.items()):
         nodes[name] = node = Node(name, logger, [])
         i = name.rfind('.', 0, len(name) - 1)  # same formula used in `logging`
         parent = root if i == -1 else nodes[name[:i]]

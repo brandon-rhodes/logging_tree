@@ -5,7 +5,10 @@ import logging.handlers
 import sys
 from logging_tree.format import build_description, printout
 from logging_tree.tests.case import LoggingTestCase
-from StringIO import StringIO
+if sys.version_info >= (3,):
+    from io import StringIO
+else:
+    from StringIO import StringIO
 
 
 class FormatTests(LoggingTestCase):
@@ -108,6 +111,7 @@ class FormatTests(LoggingTestCase):
    Handler Memory capacity=30000 dumping to:
      Handler Stream %r
 ''' % (sh.stream,))
+        logging.getLogger('').handlers[5].socket.close()  # or Python 3 warning
 
     def test_nested_handlers(self):
         h1 = logging.StreamHandler()
