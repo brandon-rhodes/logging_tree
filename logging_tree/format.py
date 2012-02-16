@@ -27,16 +27,15 @@ def build_description(node=None):
 
 
 def describe(node):
-    """Generate lines describing the given `node`.
+    """Generate lines describing the given `node` tuple.
 
-    The `node` object should be a `Node` tuple as returned by a routine
-    from the module `logging_tree.nodes`.
+    The `node` should be a tuple returned by `logging_tree.nodes.tree()`.
 
     """
-    logger = node.logger
+    logger = node[1]
     is_placeholder = isinstance(logger, logging.PlaceHolder)
     arrow = '<--' if (is_placeholder or logger.propagate) else '   '
-    name = ('[%s]' if is_placeholder else '"%s"') % node.name
+    name = ('[%s]' if is_placeholder else '"%s"') % node[0]
     yield arrow + name
     if not is_placeholder:
         if logger.level:
@@ -56,9 +55,10 @@ def describe(node):
             for line in g:
                 yield '   ' + line
 
-    if node.children:
-        last_child = node.children[-1]
-        for child in node.children:
+    children = node[2]
+    if children:
+        last_child = children[-1]
+        for child in children:
             g = describe(child)
             yield '   |'
             yield '   o' + next(g)

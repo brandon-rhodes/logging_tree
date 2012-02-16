@@ -1,17 +1,20 @@
-"""Routines that mix down the `logging` hierarchy into `Node` tuples."""
+"""Routine that explores the `logging` hierarchy and builds a `Node` tree."""
 
 import logging
-from collections import namedtuple
-
-Node = namedtuple('Node', 'name logger children')
 
 def tree():
-    """Return a tree of `Node` tuples representing the logger layout."""
-    root = Node('', logging.root, [])
+    """Return a tree of tuples representing the logger layout.
+
+    Each tuple looks like ``('logger-name', <Logger>, [...])`` where the
+    third element is a list of zero or more child tuples that share the
+    same layout.
+
+    """
+    root = ('', logging.root, [])
     nodes = {}
     for name, logger in sorted(logging.root.manager.loggerDict.items()):
-        nodes[name] = node = Node(name, logger, [])
+        nodes[name] = node = (name, logger, [])
         i = name.rfind('.', 0, len(name) - 1)  # same formula used in `logging`
         parent = root if i == -1 else nodes[name[:i]]
-        parent.children.append(node)
+        parent[2].append(node)
     return root

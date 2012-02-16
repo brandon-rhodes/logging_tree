@@ -52,12 +52,11 @@ on how much detail you need.
 ``logging_tree.tree()``
 
     Fetch the current tree of loggers from the ``logging`` module.
-    Returns a namedtuple of type ``logging_tree.nodes.Node`` with three
-    fields:
+    Returns a node, that is simply a tuple with three fields:
 
-    | ``node.name`` = the logger name (``""`` for the root logger).
-    | ``node.logger`` = the ``logging.Logger`` object itself.
-    | ``node.children`` = a list of zero or more child nodes.
+    | ``[0]`` the logger name (``""`` for the root logger).
+    | ``[1]`` the ``logging.Logger`` object itself.
+    | ``[2]`` a list of zero or more child nodes.
 
 I owe great thanks to `Rover Apps <http://roverapps.com/>`_ for letting
 me release this general-purpose tool, whose core logic I developed while
@@ -88,7 +87,7 @@ Changelog
 
 """
 __version__ = '1.0'
-__all__ = ('Node', 'tree', 'printout')
+__all__ = ('tree', 'printout')
 
-from logging_tree.nodes import Node, tree
+from logging_tree.nodes import tree
 from logging_tree.format import printout
