@@ -74,7 +74,7 @@ def describe(node):
 
 def describe_filter(f):
     """Return text describing the logging filter `f`."""
-    if type(f) is logging.Filter:
+    if f.__class__ is logging.Filter:  # using type() breaks in Python <= 2.6
         return 'name=%r' % f.name
     return repr(f)
 
@@ -100,7 +100,7 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
 
 def describe_handler(h):
     """Yield one or more lines describing the logging handler `h`."""
-    t = type(h)
+    t = h.__class__  # using type() breaks in Python <= 2.6
     format = handler_formats.get(t)
     if format is not None:
         yield format % h.__dict__
