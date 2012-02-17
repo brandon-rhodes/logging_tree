@@ -75,6 +75,9 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.1** - 2012 February 17
+    Now compatible with 2.3 <= Python <= 3.2.
+
 **Version 1.0** - 2012 February 13
     Can display the handler inside a MemoryHandler; entire public
     interface documented; 100% test coverage.
@@ -86,7 +89,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.0'
+__version__ = '1.1'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
