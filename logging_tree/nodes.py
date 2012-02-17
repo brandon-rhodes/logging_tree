@@ -12,7 +12,9 @@ def tree():
     """
     root = ('', logging.root, [])
     nodes = {}
-    for name, logger in sorted(logging.root.manager.loggerDict.items()):
+    items = list(logging.root.manager.loggerDict.items())  # for Python 2 and 3
+    items.sort()
+    for name, logger in items:
         nodes[name] = node = (name, logger, [])
         i = name.rfind('.', 0, len(name) - 1)  # same formula used in `logging`
         if i == -1:

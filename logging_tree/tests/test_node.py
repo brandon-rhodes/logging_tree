@@ -1,6 +1,7 @@
 """Tests for the `logging_tree.node` module."""
 
 import logging.handlers
+import unittest
 from logging_tree.nodes import tree
 from logging_tree.tests.case import LoggingTestCase
 
@@ -42,3 +43,7 @@ class NodeTests(LoggingTestCase):
                             ('a.b', b, []),
                             ]),
                     ]))
+
+
+if __name__ == '__main__':  # for Python <= 2.4
+    unittest.main()

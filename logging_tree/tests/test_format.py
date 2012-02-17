@@ -2,6 +2,7 @@
 
 import logging
 import logging.handlers
+import unittest
 import sys
 from logging_tree.format import build_description, printout
 from logging_tree.tests.case import LoggingTestCase
@@ -104,7 +105,6 @@ class FormatTests(LoggingTestCase):
         ah = logging.getLogger('').addHandler
         ah(logging.handlers.RotatingFileHandler(
                 '/bar/one.txt', maxBytes=10000, backupCount=3))
-        ah(logging.handlers.TimedRotatingFileHandler('/bar/two.txt'))
         ah(logging.handlers.SocketHandler('server.example.com', 514))
         ah(logging.handlers.DatagramHandler('server.example.com', 1958))
         ah(logging.handlers.SysLogHandler())
@@ -119,7 +119,6 @@ class FormatTests(LoggingTestCase):
 <--""
    Level WARNING
    Handler RotatingFile '/bar/one.txt' maxBytes=10000 backupCount=3
-   Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
    Handler Socket server.example.com 514
    Handler Datagram server.example.com 1958
    Handler SysLog ('localhost', 514) facility=1
@@ -129,7 +128,18 @@ class FormatTests(LoggingTestCase):
    Handler Memory capacity=30000 dumping to:
      Handler Stream %r
 ''' % (sh.stream,))
-        logging.getLogger('').handlers[4].socket.close()  # or Python 3 warning
+        logging.getLogger('').handlers[3].socket.close()  # or Python 3 warning
+
+    def test_2_dot_5_handlers(self):
+        if sys.version_info < (2, 5):
+            return
+        ah = logging.getLogger('').addHandler
+        ah(logging.handlers.TimedRotatingFileHandler('/bar/two.txt'))
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
+''')
 
     def test_2_dot_6_handlers(self):
         if sys.version_info < (2, 6):
@@ -172,3 +182,7 @@ class MyFilter(object):
 class MyHandler(object):
     def __repr__(self):
         return '<MyHandler>'
+
+
+if __name__ == '__main__':  # for Python <= 2.4
+    unittest.main()

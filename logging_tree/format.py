@@ -27,7 +27,7 @@ def build_description(node=None):
     if node is None:
         from logging_tree.nodes import tree
         node = tree()
-    return '\n'.join(line.rstrip() for line in describe(node)) + '\n'
+    return '\n'.join([ line.rstrip() for line in describe(node) ]) + '\n'
 
 
 def describe(node):
@@ -97,9 +97,6 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.FileHandler: 'File %(baseFilename)r',
     logging.handlers.RotatingFileHandler: 'RotatingFile %(baseFilename)r'
         ' maxBytes=%(maxBytes)r backupCount=%(backupCount)r',
-    logging.handlers.TimedRotatingFileHandler:
-        'TimedRotatingFile %(baseFilename)r when=%(when)r'
-        ' interval=%(interval)r backupCount=%(backupCount)r',
     logging.handlers.SocketHandler: 'Socket %(host)s %(port)r',
     logging.handlers.DatagramHandler: 'Datagram %(host)s %(port)r',
     logging.handlers.SysLogHandler: 'SysLog %(address)r facility=%(facility)r',
@@ -108,6 +105,12 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.handlers.BufferingHandler: 'Buffering capacity=%(capacity)r',
     logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r dumping to:',
     }
+
+if sys.version_info >= (2, 5): handler_formats.update({
+    logging.handlers.TimedRotatingFileHandler:
+        'TimedRotatingFile %(baseFilename)r when=%(when)r'
+        ' interval=%(interval)r backupCount=%(backupCount)r',
+    })
 
 if sys.version_info >= (2, 6): handler_formats.update({
     logging.handlers.WatchedFileHandler: 'WatchedFile %(baseFilename)r',
