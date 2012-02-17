@@ -15,6 +15,9 @@ def tree():
     for name, logger in sorted(logging.root.manager.loggerDict.items()):
         nodes[name] = node = (name, logger, [])
         i = name.rfind('.', 0, len(name) - 1)  # same formula used in `logging`
-        parent = root if i == -1 else nodes[name[:i]]
+        if i == -1:
+            parent = root
+        else:
+            parent = nodes[name[:i]]
         parent[2].append(node)
     return root

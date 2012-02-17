@@ -38,8 +38,14 @@ def describe(node):
     """
     logger = node[1]
     is_placeholder = isinstance(logger, logging.PlaceHolder)
-    arrow = '<--' if (is_placeholder or logger.propagate) else '   '
-    name = ('[%s]' if is_placeholder else '"%s"') % node[0]
+    if is_placeholder or logger.propagate:
+        arrow = '<--'
+    else:
+        arrow = '   '
+    if is_placeholder:
+        name = '[%s]' % node[0]
+    else:
+        name = '"%s"' % node[0]
     yield arrow + name
     if not is_placeholder:
         if logger.level:
@@ -66,7 +72,10 @@ def describe(node):
             g = describe(child)
             yield '   |'
             yield '   o' + next(g)
-            prefix = '    ' if (child is last_child) else '   |'
+            if child is last_child:
+                prefix = '    '
+            else:
+                prefix = '   |'
             for line in g:
                 yield prefix + line
 
