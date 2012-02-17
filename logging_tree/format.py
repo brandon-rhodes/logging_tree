@@ -1,6 +1,10 @@
 """Routines that pretty-print a hierarchy of logging `Node` objects."""
 
 import logging.handlers
+import sys
+
+if sys.version_info < (2, 6):
+    next = lambda generator: generator.next()  # supply a missing builtin
 
 
 def printout(node=None):
@@ -87,7 +91,6 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.handlers.TimedRotatingFileHandler:
         'TimedRotatingFile %(baseFilename)r when=%(when)r'
         ' interval=%(interval)r backupCount=%(backupCount)r',
-    logging.handlers.WatchedFileHandler: 'WatchedFile %(baseFilename)r',
     logging.handlers.SocketHandler: 'Socket %(host)s %(port)r',
     logging.handlers.DatagramHandler: 'Datagram %(host)s %(port)r',
     logging.handlers.SysLogHandler: 'SysLog %(address)r facility=%(facility)r',
@@ -96,6 +99,10 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.handlers.BufferingHandler: 'Buffering capacity=%(capacity)r',
     logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r dumping to:',
     }
+
+if sys.version_info >= (2, 6): handler_formats.update({
+    logging.handlers.WatchedFileHandler: 'WatchedFile %(baseFilename)r',
+    })
 
 
 def describe_handler(h):

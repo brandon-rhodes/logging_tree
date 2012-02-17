@@ -11,7 +11,27 @@ else:
     from StringIO import StringIO
 
 
+class FakeFile(StringIO):
+    def __init__(self, filename, mode):
+        self.filename = filename
+        StringIO.__init__(self)
+
+    def __repr__(self):
+        return '<file %r>' % self.filename
+
+
 class FormatTests(LoggingTestCase):
+
+    def setUp(self):
+        # Prevent logging file handlers from trying to open real files.
+        # (The keyword delay=1, which defers any actual attempt to open
+        # a file, did not appear until Python 2.6.)
+        logging.open = FakeFile
+        super(FormatTests, self).setUp()
+
+    def tearDown(self):
+        del logging.open
+        super(FormatTests, self).tearDown()
 
     def test_printout(self):
         stdout, sys.stdout = sys.stdout, StringIO()
@@ -54,7 +74,7 @@ class FormatTests(LoggingTestCase):
 
         log = logging.getLogger('www.status')
         log.setLevel(logging.DEBUG)
-        log.addHandler(logging.FileHandler('/foo/log.txt', delay=1))
+        log.addHandler(logging.FileHandler('/foo/log.txt'))
         log.addHandler(MyHandler())
 
         self.assertEqual(build_description(), '''\
@@ -80,12 +100,11 @@ class FormatTests(LoggingTestCase):
            Handler <MyHandler>
 ''' % (sys.stderr,))
 
-    def test_all_handlers(self):
+    def test_most_handlers(self):
         ah = logging.getLogger('').addHandler
         ah(logging.handlers.RotatingFileHandler(
-                '/bar/one.txt', maxBytes=10000, backupCount=3, delay=1))
-        ah(logging.handlers.TimedRotatingFileHandler('/bar/two.txt', delay=1))
-        ah(logging.handlers.WatchedFileHandler('/bar/three.txt', delay=1))
+                '/bar/one.txt', maxBytes=10000, backupCount=3))
+        ah(logging.handlers.TimedRotatingFileHandler('/bar/two.txt'))
         ah(logging.handlers.SocketHandler('server.example.com', 514))
         ah(logging.handlers.DatagramHandler('server.example.com', 1958))
         ah(logging.handlers.SysLogHandler())
@@ -101,7 +120,6 @@ class FormatTests(LoggingTestCase):
    Level WARNING
    Handler RotatingFile '/bar/one.txt' maxBytes=10000 backupCount=3
    Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
-   Handler WatchedFile '/bar/three.txt'
    Handler Socket server.example.com 514
    Handler Datagram server.example.com 1958
    Handler SysLog ('localhost', 514) facility=1
@@ -111,7 +129,18 @@ class FormatTests(LoggingTestCase):
    Handler Memory capacity=30000 dumping to:
      Handler Stream %r
 ''' % (sh.stream,))
-        logging.getLogger('').handlers[5].socket.close()  # or Python 3 warning
+        logging.getLogger('').handlers[4].socket.close()  # or Python 3 warning
+
+    def test_2_dot_6_handlers(self):
+        if sys.version_info < (2, 6):
+            return
+        ah = logging.getLogger('').addHandler
+        ah(logging.handlers.WatchedFileHandler('/bar/three.txt'))
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler WatchedFile '/bar/three.txt'
+''')
 
     def test_nested_handlers(self):
         h1 = logging.StreamHandler()
