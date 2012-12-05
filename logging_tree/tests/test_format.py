@@ -13,12 +13,15 @@ else:
 
 
 class FakeFile(StringIO):
-    def __init__(self, filename, mode):
+    def __init__(self, filename, mode, encoding=None):
         self.filename = filename
         StringIO.__init__(self)
 
     def __repr__(self):
         return '<file %r>' % self.filename
+
+    def fileno(self):
+        return 0
 
 
 class FormatTests(LoggingTestCase):
