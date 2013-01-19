@@ -75,6 +75,9 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.2** - 2013 January 19
+    Compatible with Python 3.3 thanks to @ralphbean.
+
 **Version 1.1** - 2012 February 17
     Now compatible with 2.3 <= Python <= 3.2.
 
@@ -89,7 +92,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.1'
+__version__ = '1.2'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
