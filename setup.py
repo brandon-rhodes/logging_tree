@@ -4,7 +4,7 @@ import logging_tree
 setup(name='logging_tree',
       version=logging_tree.__version__,
       description='Introspect and display the logger tree inside "logging"',
-      long_description=logging_tree.__doc__,
+      long_description=open('README.rst').read(),
       author='Brandon Rhodes',
       author_email='brandon@rhodesmill.org',
       url='https://github.com/brandon-rhodes/logging_tree',
