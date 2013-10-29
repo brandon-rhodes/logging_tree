@@ -78,9 +78,9 @@ Changelog
 ---------
 
 **Version 1.3** - 2013 October 29
-    Be explicit and display the logger level `NOTSET` along with the
+    Be explicit and display the logger level ``NOTSET`` along with the
     effective level inherited from the logger's ancestors; and display
-    the list of `.filters` of a custom logging handler even though it
+    the list of ``.filters`` of a custom logging handler even though it
     might contain custom code that ignores them.
 
 **Version 1.2** - 2013 January 19
