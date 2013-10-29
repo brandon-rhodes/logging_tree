@@ -123,12 +123,12 @@ def describe_handler(h):
     format = handler_formats.get(t)
     if format is not None:
         yield format % h.__dict__
-        for f in getattr(h, 'filters', ()):
-            yield '  Filter %s' % describe_filter(f)
-        if t is logging.handlers.MemoryHandler and h.target is not None:
-            g = describe_handler(h.target)
-            yield '  Handler ' + next(g)
-            for line in g:
-                yield '  ' + line
     else:
         yield repr(h)
+    for f in getattr(h, 'filters', ()):
+        yield '  Filter %s' % describe_filter(f)
+    if t is logging.handlers.MemoryHandler and h.target is not None:
+        g = describe_handler(h.target)
+        yield '  Handler ' + next(g)
+        for line in g:
+            yield '  ' + line
