@@ -11,10 +11,11 @@ loggers, filters, and handlers that your application has configured::
     >>> logging.getLogger('x.c')
     >>> from logging_tree import printout
     >>> printout()
-       ""
+    <--""
        Level WARNING
        |
        o<--"a"
+       |   Level NOTSET so inherits level WARNING
        |   |
        |   o<--"a.b"
        |       Level DEBUG
@@ -22,6 +23,7 @@ loggers, filters, and handlers that your application has configured::
        o<--[x]
            |
            o<--"x.c"
+               Level NOTSET so inherits level WARNING
 
 The logger tree should always print successfully, no matter how
 complicated.  A node whose ``[name]`` is in square brackets is a "place
@@ -74,6 +76,12 @@ On older versions of Python you will instead have to install
 
 Changelog
 ---------
+
+**Version 1.3** -
+    Be explicit and display the logger level `NOTSET` along with the
+    effective level inherited from the logger's ancestors; and display
+    the list of `.filters` of a custom logging handler even though it
+    might contain custom code that ignores them.
 
 **Version 1.2** - 2013 January 19
     Compatible with Python 3.3 thanks to @ralphbean.

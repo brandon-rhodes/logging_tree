@@ -52,6 +52,7 @@ class FormatTests(LoggingTestCase):
    Level WARNING
    |
    o<--"a"
+   |   Level NOTSET so inherits level WARNING
    |   |
    |   o<--"a.b"
    |       Level DEBUG
@@ -59,6 +60,7 @@ class FormatTests(LoggingTestCase):
    o<--[x]
        |
        o<--"x.c"
+           Level NOTSET so inherits level WARNING
 ''')
 
     def test_fancy_tree(self):
@@ -93,8 +95,10 @@ class FormatTests(LoggingTestCase):
    |     Filter name='db.errors'
    |   |
    |   o<--"db.errors"
+   |   |   Level NOTSET so inherits level INFO
    |   |
    |   o<--"db.stats"
+   |       Level NOTSET so inherits level INFO
    |
    o<--[www]
        |

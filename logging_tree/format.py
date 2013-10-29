@@ -48,7 +48,10 @@ def describe(node):
         name = '"%s"' % node[0]
     yield arrow + name
     if not is_placeholder:
-        if logger.level:
+        if logger.level == logging.NOTSET:
+            yield '   Level NOTSET so inherits level ' + logging.getLevelName(
+                logger.getEffectiveLevel())
+        else:
             yield '   Level ' + logging.getLevelName(logger.level)
         if not logger.propagate:
             yield '   Propagate OFF'
