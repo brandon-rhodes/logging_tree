@@ -77,6 +77,11 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.4** - 2014 January 8
+    Thanks to a contribution from Dave Brondsema, disabled loggers are
+    now actually marked as "Disabled" to make it less of a surprise that
+    they fail to log anything.
+
 **Version 1.3** - 2013 October 29
     Be explicit and display the logger level ``NOTSET`` along with the
     effective level inherited from the logger's ancestors; and display
@@ -100,7 +105,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.3'
+__version__ = '1.4'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
