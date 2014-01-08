@@ -55,6 +55,8 @@ def describe(node):
             yield '   Level ' + logging.getLevelName(logger.level)
         if not logger.propagate:
             yield '   Propagate OFF'
+        if logger.disabled:
+            yield '   Disabled'
 
         # In case someone has defined a custom logger that lacks a
         # `filters` or `handlers` attribute, we call getattr() and
