@@ -5,7 +5,8 @@ at the project’s official entry on the Python Package Index:
 
 https://pypi.python.org/pypi/logging_tree
 
-On Debian Testing and Unstable (and Ubuntu) systems::
+On Debian Testing and Unstable, you can install the package for the
+system Python versions with any of the standard Debian package tools:
 
 .. code-block:: bash
 
