@@ -8,8 +8,6 @@ https://pypi.python.org/pypi/logging_tree
 On Debian Testing and Unstable, you can install the package for the
 system Python versions with any of the standard Debian package tools:
 
-.. code-block:: bash
-
     $ sudo apt-get install python-logging-tree
 
 The documentation is also available as the package docstring,
