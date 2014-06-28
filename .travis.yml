@@ -9,8 +9,5 @@ python:
   - "3.3"
   - "3.4"
 
-install:
-  - "pip install unittest2"
-
 script:
-  - "unit2 discover logging_tree"
+  - "python -m unittest logging_tree.tests.test_format logging_tree.tests.test_node"
