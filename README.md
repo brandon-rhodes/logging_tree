@@ -5,6 +5,12 @@ at the project’s official entry on the Python Package Index:
 
 https://pypi.python.org/pypi/logging_tree
 
+On Debian Testing and Unstable (and Ubuntu) systems::
+
+.. code-block:: bash
+
+    $ sudo apt-get install python-logging-tree
+
 The documentation is also available as the package docstring,
 kept inside of the `logging_tree/__init__.py` file here in the
 project repository.
