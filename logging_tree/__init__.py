@@ -81,7 +81,7 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
-**Version 1.5** - 2014 December?
+**Version 1.5** - 2014 December 24
     Handlers now display their logging level if one has been set, and
     their custom logging formatter if one has been installed.
 
@@ -113,7 +113,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.4'
+__version__ = '1.5'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
