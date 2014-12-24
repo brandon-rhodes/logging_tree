@@ -108,7 +108,7 @@ handler_formats = {  # Someday we will switch to .format() when Py2.6 is gone.
     logging.handlers.SMTPHandler: 'SMTP via %(mailhost)s to %(toaddrs)s',
     logging.handlers.HTTPHandler: 'HTTP %(method)s to http://%(host)s/%(url)s',
     logging.handlers.BufferingHandler: 'Buffering capacity=%(capacity)r',
-    logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r dumping to:',
+    logging.handlers.MemoryHandler: 'Memory capacity=%(capacity)r',
     }
 
 if sys.version_info >= (2, 5): handler_formats.update({
@@ -130,10 +130,13 @@ def describe_handler(h):
         yield format % h.__dict__
     else:
         yield repr(h)
+    if getattr(h, 'level', logging.NOTSET)  != logging.NOTSET:
+        yield '  Level ' + logging.getLevelName(h.level)
     for f in getattr(h, 'filters', ()):
         yield '  Filter %s' % describe_filter(f)
     if t is logging.handlers.MemoryHandler and h.target is not None:
+        yield '  Flushes output to:'
         g = describe_handler(h.target)
-        yield '  Handler ' + next(g)
+        yield '    Handler ' + next(g)
         for line in g:
-            yield '  ' + line
+            yield '    ' + line

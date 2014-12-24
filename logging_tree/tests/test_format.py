@@ -26,6 +26,8 @@ class FakeFile(StringIO):
 
 class FormatTests(LoggingTestCase):
 
+    maxDiff = 9999
+
     def setUp(self):
         # Prevent logging file handlers from trying to open real files.
         # (The keyword delay=1, which defers any actual attempt to open
@@ -134,8 +136,9 @@ class FormatTests(LoggingTestCase):
    Handler SMTP via mail.example.com to ['Sysadmin']
    Handler HTTP POST to http://api.example.com//logs
    Handler Buffering capacity=20000
-   Handler Memory capacity=30000 dumping to:
-     Handler Stream %r
+   Handler Memory capacity=30000
+     Flushes output to:
+       Handler Stream %r
 ''' % (sh.stream,))
         logging.getLogger('').handlers[3].socket.close()  # or Python 3 warning
 
@@ -166,6 +169,7 @@ class FormatTests(LoggingTestCase):
 
         h2 = logging.handlers.MemoryHandler(30000, target=h1)
         h2.addFilter(logging.Filter('worse'))
+        h2.setLevel(logging.ERROR)
 
         h3 = logging.handlers.MemoryHandler(30000, target=h2)
         h3.addFilter(logging.Filter('bad'))
@@ -175,11 +179,14 @@ class FormatTests(LoggingTestCase):
         self.assertEqual(build_description(), '''\
 <--""
    Level WARNING
-   Handler Memory capacity=30000 dumping to:
+   Handler Memory capacity=30000
      Filter name='bad'
-     Handler Memory capacity=30000 dumping to:
-       Filter name='worse'
-       Handler Stream %r
+     Flushes output to:
+       Handler Memory capacity=30000
+         Level ERROR
+         Filter name='worse'
+         Flushes output to:
+           Handler Stream %r
 ''' % (h1.stream,))
 
 
