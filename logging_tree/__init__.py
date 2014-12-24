@@ -81,6 +81,10 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.5** - 2014 December?
+    Handlers now display their logging level if one has been set, and
+    their custom logging formatter if one has been installed.
+
 **Version 1.4** - 2014 January 8
     Thanks to a contribution from Dave Brondsema, disabled loggers are
     now actually marked as "Disabled" to make it less of a surprise that
