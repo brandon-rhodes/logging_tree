@@ -75,6 +75,7 @@ class FormatTests(LoggingTestCase):
         log.addFilter(MyFilter())
 
         handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter())
         log.addHandler(handler)
         handler.addFilter(logging.Filter('db.errors'))
 
@@ -97,6 +98,7 @@ class FormatTests(LoggingTestCase):
    |   Filter <MyFilter>
    |   Handler Stream %r
    |     Filter name='db.errors'
+   |     Formatter fmt='%%(message)s' datefmt=None
    |   |
    |   o<--"db.errors"
    |   |   Level NOTSET so inherits level INFO
