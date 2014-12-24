@@ -1,5 +1,9 @@
 """Introspection for the ``logging`` logger tree in the Standard Library.
 
+You can install this package with the standard ``pip`` command::
+
+    $ pip install logging_tree
+
 While you can write programs that call this package's ``tree()``
 function and examine the hierarchy of logger objects that it finds
 inside of the Standard Library ``logging`` module, the simplest use of
