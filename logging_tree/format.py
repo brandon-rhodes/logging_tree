@@ -137,9 +137,10 @@ def describe_handler(h):
         yield '  Filter %s' % describe_filter(f)
     formatter = getattr(h, 'formatter', None)
     if formatter is not None:
-        if isinstance(formatter, logging.Formatter):
+        if type(formatter) is logging.Formatter:
             yield '  Formatter fmt=%r datefmt=%r' % (
-                formatter._fmt, formatter.datefmt)
+                getattr(formatter, '_fmt', None),
+                getattr(formatter, 'datefmt', None))
         else:
             yield '  Formatter %r' % (formatter,)
     if t is logging.handlers.MemoryHandler and h.target is not None:

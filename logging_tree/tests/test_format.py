@@ -191,6 +191,33 @@ class FormatTests(LoggingTestCase):
            Handler Stream %r
 ''' % (h1.stream,))
 
+    def test_formatter_with_no_fmt_attributes(self):
+        f = logging.Formatter()
+        del f._fmt
+        del f.datefmt
+        h = logging.StreamHandler()
+        h.setFormatter(f)
+        logging.getLogger('').addHandler(h)
+
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler Stream %r
+     Formatter fmt=None datefmt=None
+''' % (h.stream,))
+
+    def test_formatter_that_is_not_a_Formatter_instance(self):
+        h = logging.StreamHandler()
+        h.setFormatter("Ceci n'est pas une formatter")
+        logging.getLogger('').addHandler(h)
+
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   Handler Stream %r
+     Formatter "Ceci n'est pas une formatter"
+''' % (h.stream,))
+
 
 class MyFilter(object):
     def __repr__(self):

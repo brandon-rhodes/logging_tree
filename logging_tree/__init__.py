@@ -81,6 +81,10 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.6** - 2015 January 8
+    Fixed a crash that would occur if a custom logging Formatter was
+    missing its format string attributes.
+
 **Version 1.5** - 2014 December 24
     Handlers now display their logging level if one has been set, and
     their custom logging formatter if one has been installed.
@@ -113,7 +117,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.5'
+__version__ = '1.6'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
