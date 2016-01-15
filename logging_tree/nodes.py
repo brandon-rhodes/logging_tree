@@ -2,6 +2,7 @@
 
 import logging
 
+
 def tree():
     """Return a tree of tuples representing the logger layout.
 
@@ -10,16 +11,23 @@ def tree():
     same layout.
 
     """
-    root = ('', logging.root, [])
-    nodes = {}
-    items = list(logging.root.manager.loggerDict.items())  # for Python 2 and 3
-    items.sort()
-    for name, logger in items:
-        nodes[name] = node = (name, logger, [])
-        i = name.rfind('.', 0, len(name) - 1)  # same formula used in `logging`
-        if i == -1:
-            parent = root
-        else:
-            parent = nodes[name[:i]]
-        parent[2].append(node)
-    return root
+    loggers = [
+        logger for _, logger in
+        sorted(logging.root.manager.loggerDict.items())
+        if not isinstance(logger, logging.PlaceHolder)
+    ]
+
+    children = {}
+    for logger in loggers:
+        children.setdefault(logger.parent, [])
+        children[logger.parent].append(logger)
+
+    def get_tuple(logger):
+        """Recursive function to get logger tuples."""
+        child_tuples = [get_tuple(child) for child in children.get(logger, [])]
+        logger_name = logger.name
+        if logger == logging.root:
+            logger_name = ''
+        return (logger_name, logger, child_tuples)
+
+    return get_tuple(logging.root)

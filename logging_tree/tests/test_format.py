@@ -59,10 +59,8 @@ class FormatTests(LoggingTestCase):
    |   o<--"a.b"
    |       Level DEBUG
    |
-   o<--[x]
-       |
-       o<--"x.c"
-           Level NOTSET so inherits level WARNING
+   o<--"x.c"
+       Level NOTSET so inherits level WARNING
 ''')
 
     def test_fancy_tree(self):
@@ -106,12 +104,10 @@ class FormatTests(LoggingTestCase):
    |   o<--"db.stats"
    |       Level NOTSET so inherits level INFO
    |
-   o<--[www]
-       |
-       o<--"www.status"
-           Level DEBUG
-           Handler File '/foo/log.txt'
-           Handler <MyHandler>
+   o<--"www.status"
+       Level DEBUG
+       Handler File '/foo/log.txt'
+       Handler <MyHandler>
 ''' % (sys.stderr,))
 
     def test_most_handlers(self):

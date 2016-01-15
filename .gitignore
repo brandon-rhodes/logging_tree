@@ -2,3 +2,4 @@
 /dist/
 /.tox/
 *.pyc
+/*.egg-info/

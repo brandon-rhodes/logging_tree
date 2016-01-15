@@ -37,38 +37,33 @@ def describe(node):
 
     """
     logger = node[1]
-    is_placeholder = isinstance(logger, logging.PlaceHolder)
-    if is_placeholder or logger.propagate:
+    if logger.propagate:
         arrow = '<--'
     else:
         arrow = '   '
-    if is_placeholder:
-        name = '[%s]' % node[0]
-    else:
-        name = '"%s"' % node[0]
+    name = '"%s"' % node[0]
     yield arrow + name
-    if not is_placeholder:
-        if logger.level == logging.NOTSET:
-            yield '   Level NOTSET so inherits level ' + logging.getLevelName(
-                logger.getEffectiveLevel())
-        else:
-            yield '   Level ' + logging.getLevelName(logger.level)
-        if not logger.propagate:
-            yield '   Propagate OFF'
-        if logger.disabled:
-            yield '   Disabled'
+    if logger.level == logging.NOTSET:
+        yield '   Level NOTSET so inherits level ' + logging.getLevelName(
+            logger.getEffectiveLevel())
+    else:
+        yield '   Level ' + logging.getLevelName(logger.level)
+    if not logger.propagate:
+        yield '   Propagate OFF'
+    if logger.disabled:
+        yield '   Disabled'
 
-        # In case someone has defined a custom logger that lacks a
-        # `filters` or `handlers` attribute, we call getattr() and
-        # provide an empty sequence as a fallback.
+    # In case someone has defined a custom logger that lacks a
+    # `filters` or `handlers` attribute, we call getattr() and
+    # provide an empty sequence as a fallback.
 
-        for f in getattr(logger, 'filters', ()):
-            yield '   Filter %s' % describe_filter(f)
-        for h in getattr(logger, 'handlers', ()):
-            g = describe_handler(h)
-            yield '   Handler %s' % next(g)
-            for line in g:
-                yield '   ' + line
+    for f in getattr(logger, 'filters', ()):
+        yield '   Filter %s' % describe_filter(f)
+    for h in getattr(logger, 'handlers', ()):
+        g = describe_handler(h)
+        yield '   Handler %s' % next(g)
+        for line in g:
+            yield '   ' + line
 
     children = node[2]
     if children:
