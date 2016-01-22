@@ -5,12 +5,6 @@ import unittest
 from logging_tree.nodes import tree
 from logging_tree.tests.case import LoggingTestCase
 
-class AnyPlaceHolder(object):
-    def __eq__(self, other):
-        return isinstance(other, logging.PlaceHolder)
-
-any_placeholder = AnyPlaceHolder()
-
 class NodeTests(LoggingTestCase):
 
     def test_default_tree(self):
@@ -36,12 +30,23 @@ class NodeTests(LoggingTestCase):
                     ]))
 
     def test_two_level_tree_with_placeholder(self):
+        # Place holders are now ignored in tree view
         b = logging.getLogger('a.b')
         self.assertEqual(tree(), (
                 '', logging.root, [
-                    ('a', any_placeholder, [
-                            ('a.b', b, []),
-                            ]),
+                    ('a.b', b, []),
+                    ]))
+
+    def test_overridden_parent(self):
+        a = logging.getLogger('a')
+        b = logging.getLogger('b')
+        b.parent = a
+
+        self.assertEqual(tree(), (
+                '', logging.root, [
+                    ('a', a, [
+                        ('b', b, []),
+                        ]),
                     ]))
 
 
