@@ -64,10 +64,6 @@ on how much detail you need.
     | ``[1]`` the ``logging.Logger`` object itself.
     | ``[2]`` a list of zero or more child nodes.
 
-I owe great thanks to `Rover Apps <http://roverapps.com/>`_ for letting
-me release this general-purpose tool, whose core logic I developed while
-working on one of their projects.  They care about the Python community!
-
 I welcome contributions and ideas as this package matures.  You can find
 the bug tracker at the `repository page on github
 <https://github.com/brandon-rhodes/logging_tree>`_.  Developers can run
