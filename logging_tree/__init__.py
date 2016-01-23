@@ -81,6 +81,10 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.7** - 2016 January 23
+    Detect whether each logger has the correct "parent" attribute and,
+    if not, print where its log messages are being sent instead.
+
 **Version 1.6** - 2015 January 8
     Fixed a crash that would occur if a custom logging Formatter was
     missing its format string attributes.
@@ -117,7 +121,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.6'
+__version__ = '1.7'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
