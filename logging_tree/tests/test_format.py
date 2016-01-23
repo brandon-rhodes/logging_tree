@@ -218,6 +218,35 @@ class FormatTests(LoggingTestCase):
      Formatter "Ceci n'est pas une formatter"
 ''' % (h.stream,))
 
+    def test_handler_with_wrong_parent_attribute(self):
+        logging.getLogger('celery')
+        logging.getLogger('app.model')
+        logging.getLogger('app.task').parent = logging.getLogger('celery.task')
+        logging.getLogger('app.view')
+
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   |
+   o<--[app]
+   |   |
+   |   o<--"app.model"
+   |   |   Level NOTSET so inherits level WARNING
+   |   |
+   |   o !-"app.task"
+   |   |   Broken .parent! Messages propagate to "celery.task"
+   |   |   Level NOTSET so inherits level WARNING
+   |   |
+   |   o<--"app.view"
+   |       Level NOTSET so inherits level WARNING
+   |
+   o<--"celery"
+       Level NOTSET so inherits level WARNING
+       |
+       o<--"celery.task"
+           Level NOTSET so inherits level WARNING
+''')
+
 
 class MyFilter(object):
     def __repr__(self):
