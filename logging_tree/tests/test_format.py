@@ -234,7 +234,7 @@ class FormatTests(LoggingTestCase):
    |   |   Level NOTSET so inherits level WARNING
    |   |
    |   o !-"app.task"
-   |   |   Broken .parent! Messages propagate to "celery.task"
+   |   |   Broken .parent! Messages propagate to 'celery.task'
    |   |   Level NOTSET so inherits level WARNING
    |   |
    |   o<--"app.view"
