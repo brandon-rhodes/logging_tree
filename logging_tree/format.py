@@ -61,8 +61,11 @@ def _describe(node, parent):
             arrow = ' !-'
         yield '%s"%s"' % (arrow, name)
         if not parent_is_correct:
-            yield ('   Broken .parent! Messages propagate to %r'
-                   % getattr(logger.parent, 'name', None))
+            if logger.parent is None:
+                yield ('   Broken .parent is None, so messages stop here')
+            else:
+                yield ('   Broken .parent redirects messages to %r instead'
+                       % (logger.parent.name,))
         if logger.level == logging.NOTSET:
             yield '   Level NOTSET so inherits level ' + logging.getLevelName(
                 logger.getEffectiveLevel())

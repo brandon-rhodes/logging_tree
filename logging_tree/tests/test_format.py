@@ -234,7 +234,7 @@ class FormatTests(LoggingTestCase):
    |   |   Level NOTSET so inherits level WARNING
    |   |
    |   o !-"app.task"
-   |   |   Broken .parent! Messages propagate to 'celery.task'
+   |   |   Broken .parent redirects messages to 'celery.task' instead
    |   |   Level NOTSET so inherits level WARNING
    |   |
    |   o<--"app.view"
@@ -245,6 +245,18 @@ class FormatTests(LoggingTestCase):
        |
        o<--"celery.task"
            Level NOTSET so inherits level WARNING
+''')
+
+    def test_handler_with_parent_attribute_that_is_none(self):
+        logging.getLogger('app').parent = None
+
+        self.assertEqual(build_description(), '''\
+<--""
+   Level WARNING
+   |
+   o !-"app"
+       Broken .parent is None, so messages stop here
+       Level NOTSET so inherits level NOTSET
 ''')
 
 
