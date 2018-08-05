@@ -77,6 +77,10 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.8** - 2018 August 5
+    Improve the output to better explain what happens if a "parent"
+    attribute has been set to None.
+
 **Version 1.7** - 2016 January 23
     Detect whether each logger has the correct "parent" attribute and,
     if not, print where its log messages are being sent instead.
@@ -117,7 +121,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.7'
+__version__ = '1.8'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
