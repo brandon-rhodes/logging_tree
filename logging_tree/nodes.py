@@ -27,12 +27,16 @@ def tree(trim=False):
     return root
 
 
-def trim_tree(node=None):
+def trim_tree(node=None, trim_nullhandlers=True):
     """Remove nodes that don't modify any logging configuration from tree."""
     if node is None:
         node = tree()
     name, logger, children = node
     children = list(filter(None, map(trim_tree, children)))
+    handlers = getattr(logger, 'handlers', ())
+    if trim_nullhandlers:
+        handlers = [handler for handler in handlers
+                    if not isinstance(handler, logging.NullHandler)]
     if (
         not children
         and (
@@ -42,7 +46,7 @@ def trim_tree(node=None):
                 and logger.propagate
                 and logger.level == logging.NOTSET
                 and not getattr(logger, 'filters', ())
-                and not getattr(logger, 'handlers', ())
+                and not handlers
             )
         )
     ):

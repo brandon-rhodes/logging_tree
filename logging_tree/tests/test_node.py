@@ -82,6 +82,25 @@ class NodeTests(LoggingTestCase):
                             ]),
                     ]))
 
+    def test_two_level_trim_tree_with_placeholder_and_nullhandler(self):
+        a = logging.getLogger('a')
+        a.addHandler(logging.StreamHandler())
+        b = logging.getLogger('b')
+        b.addHandler(logging.NullHandler())
+        d = logging.getLogger('c.d')
+        d.addHandler(logging.StreamHandler())
+        f = logging.getLogger('e.f')
+        f.addHandler(logging.NullHandler())
+        g = logging.getLogger('g')
+        g.addHandler(logging.NullHandler())
+        h = logging.getLogger('g.h')
+        h.addHandler(logging.NullHandler())
+        self.assertEqual(tree(trim=True), (
+                '', logging.root, [
+                    ('a', a, []),
+                    ('c', any_placeholder, [('c.d', d, [])]),
+                    ]))
+
 
 if __name__ == '__main__':  # for Python <= 2.4
     unittest.main()
