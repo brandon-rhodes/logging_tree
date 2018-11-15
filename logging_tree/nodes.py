@@ -2,7 +2,7 @@
 
 import logging
 
-def tree():
+def tree(trim=False):
     """Return a tree of tuples representing the logger layout.
 
     Each tuple looks like ``('logger-name', <Logger>, [...])`` where the
@@ -22,4 +22,29 @@ def tree():
         else:
             parent = nodes[name[:i]]
         parent[2].append(node)
+    if trim:
+        root = trim_tree(root)
     return root
+
+
+def trim_tree(node=None):
+    """Remove nodes that don't modify any logging configuration from tree."""
+    if node is None:
+        node = tree()
+    name, logger, children = node
+    children = list(filter(None, map(trim_tree, children)))
+    if (
+        not children
+        and (
+            isinstance(logger, logging.PlaceHolder)
+            or (
+                not logger.disabled
+                and logger.propagate
+                and logger.level == logging.NOTSET
+                and not getattr(logger, 'filters', ())
+                and not getattr(logger, 'handlers', ())
+            )
+        )
+    ):
+        return None
+    return name, logger, children

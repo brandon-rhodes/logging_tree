@@ -44,6 +44,44 @@ class NodeTests(LoggingTestCase):
                             ]),
                     ]))
 
+    def test_default_trim_tree(self):
+        self.assertEqual(tree(trim=True), ('', logging.root, []))
+
+    def test_one_level_trim_tree(self):
+        a = logging.getLogger('a')
+        b = logging.getLogger('b')
+        b.setLevel(logging.INFO)
+        self.assertEqual(tree(trim=True), (
+                '', logging.root, [
+                    ('b', b, []),
+                    ]))
+
+    def test_two_level_trim_tree(self):
+        a = logging.getLogger('a')
+        a.setLevel(logging.INFO)
+        b = logging.getLogger('a.b')
+        c = logging.getLogger('c')
+        d = logging.getLogger('c.d')
+        d.setLevel(logging.INFO)
+        self.assertEqual(tree(trim=True), (
+                '', logging.root, [
+                    ('a', a, []),
+                    ('c', c, [
+                            ('c.d', d, []),
+                            ]),
+                    ]))
+
+    def test_two_level_trim_tree_with_placeholder(self):
+        b = logging.getLogger('a.b')
+        d = logging.getLogger('c.d')
+        d.setLevel(logging.INFO)
+        self.assertEqual(tree(trim=True), (
+                '', logging.root, [
+                    ('c', any_placeholder, [
+                            ('c.d', d, []),
+                            ]),
+                    ]))
+
 
 if __name__ == '__main__':  # for Python <= 2.4
     unittest.main()
