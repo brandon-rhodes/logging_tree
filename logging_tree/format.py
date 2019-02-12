@@ -7,14 +7,20 @@ if sys.version_info < (2, 6):
     next = lambda generator: generator.next()  # supply a missing builtin
 
 
-def printout(node=None):
+def printout(node=None, file=None):
     """Print a tree of loggers, given a `Node` from `logging_tree.nodes`.
 
     If no `node` argument is provided, then the entire tree of currently
     active `logging` loggers is printed out.
-
+    
+    If a file argument is provided, output will be written to it, 
+    otherwise output will go to stdout.
     """
-    print(build_description(node)[:-1])
+    if file is None:
+        print(build_description(node)[:-1])
+    else:
+        file.write(build_description(node)[:-1])
+        file.write("\n")
 
 
 def build_description(node=None):
