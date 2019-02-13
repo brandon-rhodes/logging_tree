@@ -16,10 +16,11 @@ def printout(node=None, file=None):
     If a file argument is provided, output will be written to it, 
     otherwise output will go to stdout.
     """
+    description = build_description(node)[:-1]
     if file is None:
-        print(build_description(node)[:-1])
+        print(description)
     else:
-        file.write(build_description(node)[:-1])
+        file.write(description)
         file.write("\n")
 
 
