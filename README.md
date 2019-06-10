@@ -1,3 +1,8 @@
+# logging_tree
+
+[![pypi](https://img.shields.io/pypi/v/logging_tree.svg)](https://pypi.python.org/pypi/logging_tree/)
+
+
 Welcome to the `logging_tree` Python project repository!
 
 You can install this package and read its documentation
