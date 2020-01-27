@@ -77,6 +77,11 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.8.1** - 2020 January 26
+    Adjust one test to make it pass under Python 3.8, and update the
+    distribution classifiers to declare compatibility with Python
+    versions through 3.8.
+
 **Version 1.8** - 2018 August 5
     Improve the output to better explain what happens if a "parent"
     attribute has been set to None.
@@ -121,7 +126,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.8'
+__version__ = '1.8.1'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
