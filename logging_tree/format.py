@@ -1,4 +1,5 @@
 """Routines that pretty-print a hierarchy of logging `Node` objects."""
+from __future__ import print_function
 
 import logging.handlers
 import sys
@@ -7,14 +8,16 @@ if sys.version_info < (2, 6):
     next = lambda generator: generator.next()  # supply a missing builtin
 
 
-def printout(node=None):
+def printout(node=None, file=None):
     """Print a tree of loggers, given a `Node` from `logging_tree.nodes`.
 
     If no `node` argument is provided, then the entire tree of currently
     active `logging` loggers is printed out.
 
     """
-    print(build_description(node)[:-1])
+    if file is None:
+        file = sys.stdout
+    print(build_description(node)[:-1], file=file)
 
 
 def build_description(node=None):

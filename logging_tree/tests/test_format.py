@@ -45,6 +45,12 @@ class FormatTests(LoggingTestCase):
         self.assertEqual(sys.stdout.getvalue(), '<--""\n   Level WARNING\n')
         sys.stdout = stdout
 
+    def test_printout_stderr(self):
+        stderr, sys.stderr = sys.stderr, StringIO()
+        printout(file=sys.stderr)
+        self.assertEqual(sys.stderr.getvalue(), '<--""\n   Level WARNING\n')
+        sys.stderr = stderr
+
     def test_simple_tree(self):
         logging.getLogger('a')
         logging.getLogger('a.b').setLevel(logging.DEBUG)
