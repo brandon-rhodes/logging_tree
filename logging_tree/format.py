@@ -1,5 +1,4 @@
 """Routines that pretty-print a hierarchy of logging `Node` objects."""
-from __future__ import print_function
 
 import logging.handlers
 import sys
@@ -17,7 +16,7 @@ def printout(node=None, file=None):
     """
     if file is None:
         file = sys.stdout
-    print(build_description(node)[:-1], file=file)
+    file.write(build_description(node)[:-1] + "\n")
 
 
 def build_description(node=None):
