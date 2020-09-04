@@ -29,6 +29,11 @@ loggers, filters, and handlers that your application has configured::
            o<--"x.c"
                Level NOTSET so inherits level WARNING
 
+If you instead want to write the tree diagram to a file, stream, or
+other file-like object, use::
+
+    file_object.write(logging_tree.format.build_description())
+
 The logger tree should always print successfully, no matter how
 complicated.  A node whose ``[name]`` is in square brackets is a "place
 holder" that has never actually been named in a ``getLogger()`` call,
