@@ -11,6 +11,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 
 script:
   - "python -m unittest logging_tree.tests.test_format logging_tree.tests.test_node"
