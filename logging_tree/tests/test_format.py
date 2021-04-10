@@ -154,19 +154,6 @@ class FormatTests(LoggingTestCase):
    Level WARNING
    Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
 '''
-        if sys.version_info == (3, 8):
-            # Apparently the design of the TimedRotatingFileHandler has
-            # become a bit more ambitious as of Python 3.8.
-            expected += '''\
-   |
-   o<--"asyncio"
-   |   Level NOTSET so inherits level WARNING
-   |
-   o<--[concurrent]
-       |
-       o<--"concurrent.futures"
-           Level NOTSET so inherits level WARNING
-'''
         self.assertEqual(build_description(), expected)
 
     def test_2_dot_6_handlers(self):
