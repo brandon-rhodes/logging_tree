@@ -13,7 +13,7 @@ else:
 
 
 class FakeFile(StringIO):
-    def __init__(self, filename, mode, encoding=None):
+    def __init__(self, filename, *args, **kwargs):
         self.filename = filename
         StringIO.__init__(self)
 
@@ -154,7 +154,7 @@ class FormatTests(LoggingTestCase):
    Level WARNING
    Handler TimedRotatingFile '/bar/two.txt' when='H' interval=3600 backupCount=0
 '''
-        if sys.version_info >= (3, 8):
+        if sys.version_info == (3, 8):
             # Apparently the design of the TimedRotatingFileHandler has
             # become a bit more ambitious as of Python 3.8.
             expected += '''\
