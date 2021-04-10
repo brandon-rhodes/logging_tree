@@ -82,6 +82,11 @@ On older versions of Python you will instead have to install
 Changelog
 ---------
 
+**Version 1.9** - 2021 April 10
+    Declare compatibility with Python 3.9.  Improve how the logging
+    module's built-in ``Formatter`` class is displayed under old Python
+    versions where the ``logging`` module uses old-style classes.
+
 **Version 1.8.1** - 2020 January 26
     Adjust one test to make it pass under Python 3.8, and update the
     distribution classifiers to declare compatibility with Python
@@ -131,7 +136,7 @@ Changelog
     Initial release.
 
 """
-__version__ = '1.8.1'
+__version__ = '1.9'
 __all__ = ('tree', 'printout')
 
 from logging_tree.nodes import tree
