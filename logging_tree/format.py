@@ -156,7 +156,7 @@ def describe_handler(h):
         yield '  Filter %s' % describe_filter(f)
     formatter = getattr(h, 'formatter', None)
     if formatter is not None:
-        if type(formatter) is logging.Formatter:
+        if class_of(formatter) is logging.Formatter:
             yield '  Formatter fmt=%r datefmt=%r' % (
                 getattr(formatter, '_fmt', None),
                 getattr(formatter, 'datefmt', None))
@@ -168,3 +168,17 @@ def describe_handler(h):
         yield '    Handler ' + next(g)
         for line in g:
             yield '    ' + line
+
+
+def class_of(obj):
+    """Try to learn the class of `obj`.
+
+    We perform the operation gingerly, as `obj` could be any kind of
+    user-supplied object: an old-style class, a new-style class, or a
+    built-in type that doesn't follow normal rules.
+
+    """
+    cls = getattr(obj, '__class__', None)
+    if cls is None:
+        cls = type(obj)
+    return cls
