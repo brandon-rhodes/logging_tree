@@ -7,31 +7,31 @@ You can install this package with the standard ``pip`` command::
 The simplest way to use this package is to call ``printout()`` to see
 the loggers, filters, and handlers that your application has configured:
 
-    >>> import logging
-    >>> a = logging.getLogger('a')
-    >>> b = logging.getLogger('a.b').setLevel(logging.DEBUG)
-    >>> c = logging.getLogger('x.c')
+>>> import logging
+>>> a = logging.getLogger('a')
+>>> b = logging.getLogger('a.b').setLevel(logging.DEBUG)
+>>> c = logging.getLogger('x.c')
 
-    >>> import sys
-    >>> h = logging.StreamHandler(sys.stdout)
-    >>> logging.getLogger().addHandler(h)
+>>> import sys
+>>> h = logging.StreamHandler(sys.stdout)
+>>> logging.getLogger().addHandler(h)
 
-    >>> from logging_tree import printout
-    >>> printout()
-    <--""
-       Level WARNING
-       Handler Stream <sys.stdout>
+>>> from logging_tree import printout
+>>> printout()
+<--""
+   Level WARNING
+   Handler Stream <sys.stdout>
+   |
+   o<--"a"
+   |   Level NOTSET so inherits level WARNING
+   |   |
+   |   o<--"a.b"
+   |       Level DEBUG
+   |
+   o<--[x]
        |
-       o<--"a"
-       |   Level NOTSET so inherits level WARNING
-       |   |
-       |   o<--"a.b"
-       |       Level DEBUG
-       |
-       o<--[x]
-           |
-           o<--"x.c"
-               Level NOTSET so inherits level WARNING
+       o<--"x.c"
+           Level NOTSET so inherits level WARNING
 
 If you instead want to write the tree diagram to a file, stream, or
 other file-like object, use::
@@ -54,56 +54,56 @@ handler attached to the root logger will not only receive messages sent
 directly to the root, but also messages that propagate up from a child
 like ``a.b``.
 
-    >>> logging.getLogger().warning('message sent to the root')
-    message sent to the root
-    >>> logging.getLogger('a.b').warning('message sent to a.b')
-    message sent to a.b
+>>> logging.getLogger().warning('message sent to the root')
+message sent to the root
+>>> logging.getLogger('a.b').warning('message sent to a.b')
+message sent to a.b
 
 But messages are *not* subjected to filtering as they propagate.  So a
 debug-level message, which our root node will discard because the root's
 level is set to ``WARNING``, will be accepted by the ``a.b`` node and
 will be allowed to propagate up to the root handler.
 
-    >>> logging.getLogger().debug('this message is ignored')
-    >>> logging.getLogger('a.b').debug('but this message prints!')
-    but this message prints!
+>>> logging.getLogger().debug('this message is ignored')
+>>> logging.getLogger('a.b').debug('but this message prints!')
+but this message prints!
 
 If both the root node and ``a.b`` have a handler attached, then a
 message accepted by ``a.b`` will be printed twice, once by its own node,
 and then a second time when the message propagates up to the root.
 
-    >>> logging.getLogger('a.b').addHandler(h)
-    >>> logging.getLogger('a.b').warning('this message prints twice')
-    this message prints twice
-    this message prints twice
+>>> logging.getLogger('a.b').addHandler(h)
+>>> logging.getLogger('a.b').warning('this message prints twice')
+this message prints twice
+this message prints twice
 
 But you can stop a node from propagating messages to its parent by
 setting its ``propagate`` attribute to ``False``.
 
-    >>> logging.getLogger('a.b').propagate = False
-    >>> logging.getLogger('a.b').warning('does not propagate')
-    does not propagate
+>>> logging.getLogger('a.b').propagate = False
+>>> logging.getLogger('a.b').warning('does not propagate')
+does not propagate
 
 The logging tree will indicate that propagate is turned off by no longer
 drawing the arrow ``<--`` that points from the node to its parent:
 
-    >>> printout()
-    <--""
-       Level WARNING
-       Handler Stream <sys.stdout>
+>>> printout()
+<--""
+   Level WARNING
+   Handler Stream <sys.stdout>
+   |
+   o<--"a"
+   |   Level NOTSET so inherits level WARNING
+   |   |
+   |   o   "a.b"
+   |       Level DEBUG
+   |       Propagate OFF
+   |       Handler Stream <sys.stdout>
+   |
+   o<--[x]
        |
-       o<--"a"
-       |   Level NOTSET so inherits level WARNING
-       |   |
-       |   o   "a.b"
-       |       Level DEBUG
-       |       Propagate OFF
-       |       Handler Stream <sys.stdout>
-       |
-       o<--[x]
-           |
-           o<--"x.c"
-               Level NOTSET so inherits level WARNING
+       o<--"x.c"
+           Level NOTSET so inherits level WARNING
 
 You can turn propagate back on again by setting the attribute ``True``.
 
