@@ -4,15 +4,14 @@ You can install this package with the standard ``pip`` command::
 
     $ pip install logging_tree
 
-While you can write programs that call this package's ``tree()``
-function and examine the hierarchy of logger objects that it finds
-inside of the Standard Library ``logging`` module, the simplest use of
-this package for debugging is to call ``printout()`` to print the
-loggers, filters, and handlers that your application has configured::
+The simplest way to use this package is to call ``printout()`` to see
+the loggers, filters, and handlers that your application has configured:
 
-    >>> logging.getLogger('a')
-    >>> logging.getLogger('a.b').setLevel(logging.DEBUG)
-    >>> logging.getLogger('x.c')
+    >>> import logging
+    >>> a = logging.getLogger('a')
+    >>> b = logging.getLogger('a.b').setLevel(logging.DEBUG)
+    >>> c = logging.getLogger('x.c')
+
     >>> from logging_tree import printout
     >>> printout()
     <--""
@@ -34,18 +33,89 @@ other file-like object, use::
 
     file_object.write(logging_tree.format.build_description())
 
-The logger tree should always print successfully, no matter how
+The logging tree should always print successfully, no matter how
 complicated.  A node whose ``[name]`` is in square brackets is a "place
-holder" that has never actually been named in a ``getLogger()`` call,
-but was created automatically to serve as the parent of loggers further
-down the tree.
+holder" that has never itself been named in a ``getLogger()`` call, but
+which was created automatically to serve as the parent of loggers
+further down the tree.
 
-There are several interfaces that ``logging_tree`` supports, depending
-on how much detail you need.
+Propagation
+-----------
+
+A quick reminder about how ``logging`` works: by default, a node will
+not only submit a message to its own handlers (if any), but will also
+"propagate" each message up to its parent.  For example, a ``Stream``
+handler attached to the root logger will not only receive messages sent
+directly to the root, but also messages that propagate up from a child
+like ``a.b``.
+
+    >>> import sys
+    >>> h = logging.StreamHandler(sys.stdout)
+    >>> logging.getLogger().addHandler(h)
+    >>> logging.getLogger().warning('message sent to the root')
+    message sent to the root
+    >>> logging.getLogger('a.b').warning('message sent to a.b')
+    message sent to a.b
+
+But messages are *not* subjected to filtering as they propagate.  So a
+debug-level message, which our root node will discard because the root's
+level is set to ``WARNING``, will be accepted by the ``a.b`` node and
+will propagate up to the root handler.
+
+    >>> logging.getLogger().debug('this message is ignored')
+    >>> logging.getLogger('a.b').debug('but this message prints!')
+    but this message prints!
+
+If both the root node and ``a.b`` have a handler attached, then a
+message accepted by ``a.b`` will be printed twice, once by its own node,
+and then a second time when the message propagates up to the root.
+
+    >>> h = logging.StreamHandler(sys.stdout)
+    >>> logging.getLogger('a.b').addHandler(h)
+    >>> logging.getLogger('a.b').warning('this message prints twice')
+    this message prints twice
+    this message prints twice
+
+You can stop a node from propagating messages to its parent by setting
+its ``propagate`` attribute to ``False``.
+
+    >>> logging.getLogger('a.b').propagate = False
+    >>> logging.getLogger('a.b').warning('does not propagate')
+    does not propagate
+
+The logging tree will indicate that propagate is turned off by no longer
+drawing the arrow ``<--`` that points from the node to its parent:
+
+    >>> printout()
+    <--""
+       Level WARNING
+       Handler Stream <sys.stdout>
+       |
+       o<--"a"
+       |   Level NOTSET so inherits level WARNING
+       |   |
+       |   o   "a.b"
+       |       Level DEBUG
+       |       Propagate OFF
+       |       Handler Stream <sys.stdout>
+       |
+       o<--[x]
+           |
+           o<--"x.c"
+               Level NOTSET so inherits level WARNING
+
+You can turn propagate back on again by setting the attribute ``True``.
+
+API
+---
+
+Even though most users will simply call the top-level ``printout()``
+routine, this package also offers a few lower-level calls.  Here's the
+complete list:
 
 ``logging_tree.printout(node=None)``
 
-    Prints the current logger tree, or the tree based at the given
+    Prints the current logging tree, or the tree based at the given
     `node`, to the standard output.
 
 ``logging_tree.format.build_description(node=None)``
@@ -69,10 +139,9 @@ on how much detail you need.
     | ``[1]`` the ``logging.Logger`` object itself.
     | ``[2]`` a list of zero or more child nodes.
 
-I welcome contributions and ideas as this package matures.  You can find
-the bug tracker at the `repository page on github
-<https://github.com/brandon-rhodes/logging_tree>`_.  Developers can run
-this package's tests with::
+You can find this package's issue tracker `on GitHub
+<https://github.com/brandon-rhodes/logging_tree>`_.  You can run this
+package's test suite with::
 
     $ python -m unittest discover logging_tree
 
