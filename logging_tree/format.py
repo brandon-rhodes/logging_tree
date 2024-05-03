@@ -4,8 +4,8 @@ import logging.handlers
 import sys
 
 if sys.version_info < (2, 6):
-    next = lambda generator: generator.next()  # supply a missing builtin
-
+    def next(generator):
+        return generator.next()
 
 def printout(node=None):
     """Print a tree of loggers, given a `Node` from `logging_tree.nodes`.
