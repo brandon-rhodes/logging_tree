@@ -12,10 +12,15 @@ the loggers, filters, and handlers that your application has configured:
     >>> b = logging.getLogger('a.b').setLevel(logging.DEBUG)
     >>> c = logging.getLogger('x.c')
 
+    >>> import sys
+    >>> h = logging.StreamHandler(sys.stdout)
+    >>> logging.getLogger().addHandler(h)
+
     >>> from logging_tree import printout
     >>> printout()
     <--""
        Level WARNING
+       Handler Stream <sys.stdout>
        |
        o<--"a"
        |   Level NOTSET so inherits level WARNING
@@ -34,10 +39,10 @@ other file-like object, use::
     file_object.write(logging_tree.format.build_description())
 
 The logging tree should always print successfully, no matter how
-complicated.  A node whose ``[name]`` is in square brackets is a "place
-holder" that has never itself been named in a ``getLogger()`` call, but
-which was created automatically to serve as the parent of loggers
-further down the tree.
+complicated.  A node whose name is in square brackets, like the ``[x]``
+node above, is a "place holder" that has never itself been named in a
+``getLogger()`` call, but which was created automatically to serve as
+the parent of loggers further down the tree.
 
 Propagation
 -----------
@@ -49,9 +54,6 @@ handler attached to the root logger will not only receive messages sent
 directly to the root, but also messages that propagate up from a child
 like ``a.b``.
 
-    >>> import sys
-    >>> h = logging.StreamHandler(sys.stdout)
-    >>> logging.getLogger().addHandler(h)
     >>> logging.getLogger().warning('message sent to the root')
     message sent to the root
     >>> logging.getLogger('a.b').warning('message sent to a.b')
@@ -60,7 +62,7 @@ like ``a.b``.
 But messages are *not* subjected to filtering as they propagate.  So a
 debug-level message, which our root node will discard because the root's
 level is set to ``WARNING``, will be accepted by the ``a.b`` node and
-will propagate up to the root handler.
+will be allowed to propagate up to the root handler.
 
     >>> logging.getLogger().debug('this message is ignored')
     >>> logging.getLogger('a.b').debug('but this message prints!')
@@ -70,14 +72,13 @@ If both the root node and ``a.b`` have a handler attached, then a
 message accepted by ``a.b`` will be printed twice, once by its own node,
 and then a second time when the message propagates up to the root.
 
-    >>> h = logging.StreamHandler(sys.stdout)
     >>> logging.getLogger('a.b').addHandler(h)
     >>> logging.getLogger('a.b').warning('this message prints twice')
     this message prints twice
     this message prints twice
 
-You can stop a node from propagating messages to its parent by setting
-its ``propagate`` attribute to ``False``.
+But you can stop a node from propagating messages to its parent by
+setting its ``propagate`` attribute to ``False``.
 
     >>> logging.getLogger('a.b').propagate = False
     >>> logging.getLogger('a.b').warning('does not propagate')
@@ -150,6 +151,10 @@ On older versions of Python you will instead have to install
 
 Changelog
 ---------
+
+**Version 1.10** - 2024 May 3
+    Declare compatibility with Python 3.12, and expand the documentation
+    to describe the basics of log message propagation.
 
 **Version 1.9** - 2021 April 10
     Declare compatibility with Python 3.9.  Improve how the logging
