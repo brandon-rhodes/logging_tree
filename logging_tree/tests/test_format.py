@@ -1,9 +1,12 @@
 """Tests for the `logging_tree.format` module."""
 
+import doctest
 import logging
 import logging.handlers
 import unittest
 import sys
+
+import logging_tree
 from logging_tree.format import build_description, printout
 from logging_tree.tests.case import LoggingTestCase
 if sys.version_info >= (3,):
@@ -270,6 +273,16 @@ class MyHandler(object):
     def __repr__(self):
         return '<MyHandler>'
 
+
+def _spoofout_repr(self):
+    """Improve how doctest's fake stdout looks in our package's doctest."""
+    return '<sys.stdout>'
+
+doctest._SpoofOut.__repr__ = _spoofout_repr
+
+def load_tests(loader, suite, ignore):
+    suite.addTests(doctest.DocTestSuite(logging_tree))
+    return suite
 
 if __name__ == '__main__':  # for Python <= 2.4
     unittest.main()
