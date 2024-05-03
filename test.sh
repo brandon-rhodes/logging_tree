@@ -5,6 +5,8 @@
 # to have installed with pyenv).  For a comprehensive test of whether it
 # will actually work if installed from its distribution, see `tox.ini`.
 
+errors=0
+
 for python in $(ls ~/.pyenv/versions/*/bin/python | sort -t. -k 2,2 -k 3n)
 do
     echo
@@ -13,6 +15,12 @@ do
     echo ======================================================================
     for test in logging_tree/tests/test_*.py
     do
-        PYTHONPATH=. $python $test
+        if ! PYTHONPATH=. $python $test
+        then
+            let "errors=errors+1"
+        fi
     done
 done
+
+echo
+echo "Failure count: $errors"
