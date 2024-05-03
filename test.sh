@@ -5,7 +5,7 @@
 # to have installed with pyenv).  For a comprehensive test of whether it
 # will actually work if installed from its distribution, see `tox.ini`.
 
-for python in ~/.pyenv/versions/*/bin/python
+for python in $(ls ~/.pyenv/versions/*/bin/python | sort -t. -k 2,2 -k 3n)
 do
     echo
     echo ======================================================================
