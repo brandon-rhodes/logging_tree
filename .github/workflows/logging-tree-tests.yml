@@ -8,17 +8,14 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [2.7, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]
+        python: [python2, python3]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Test with unittest
-      run: |
-        python -m unittest logging_tree.tests.test_format logging_tree.tests.test_node
+    - uses: actions/checkout@v4
+    - name: Print Python version
+      run: ${{matrix.python}} --version
+    - name: Test
+      run: ${{matrix.python}} -m unittest discover -v logging_tree
